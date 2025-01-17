@@ -165,6 +165,14 @@ public class MainScreenController : MonoBehaviour
     {
         File.WriteAllText(counterFilePath, counter.ToString());
     }
+    public void QuitApp()
+    {
+        Application.Quit();
+    }
+    private void OnApplicationQuit()
+    {
+        SaveCounter();
+    }
 }
 
 // Пример классов Settings и Message
