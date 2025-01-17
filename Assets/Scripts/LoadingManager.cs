@@ -7,10 +7,10 @@ using UnityEngine.UI;
 public class LoadingManager : MonoBehaviour
 {
     public Slider progressBar; // Ссылка на прогресс-бар
-    private string settingsURL = "https://example.com/Settings.json"; // URL для загрузки JSON
-    private string messageURL = "https://example.com/Message.json";  // URL для приветственного сообщения
-    private string assetBundleURL = "https://example.com/mybundle"; // URL для Asset Bundle
-
+    private string settingsURL = "https://example.com/Settings.json"; // Пример URL для загрузки JSON
+    private string messageURL = "https://example.com/Message.json";  // Пример URL для приветственного сообщения
+    private string assetBundleURL = "https://example.com/mybundle"; // Пример URL для Asset Bundle
+ 
     private AssetBundle loadedBundle;
 
     [System.Serializable]
@@ -25,14 +25,13 @@ public class LoadingManager : MonoBehaviour
         public string welcomeMessage;
     }
 
+    private Settings settings;
+    private Message message;
 
     private void Start()
     {
         StartCoroutine(LoadContent());
     }
-
-    private Settings settings;
-    private Message message;
 
     private IEnumerator LoadContent()
     {
@@ -40,7 +39,7 @@ public class LoadingManager : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
 
         // Шаг 1: Загрузка и парсинг Settings.json
-        string settingsPath = Application.streamingAssetsPath + "/Settings.json";
+        string settingsPath = Application.streamingAssetsPath + "/Settings.json"; //Здесь можно использовать URL
         UnityWebRequest settingsRequest = UnityWebRequest.Get(settingsPath);
         yield return settingsRequest.SendWebRequest();
 
@@ -56,7 +55,7 @@ public class LoadingManager : MonoBehaviour
         progressBar.value = 0.33f;
 
         // Шаг 2: Загрузка и парсинг Message.json
-        string messagePath = Application.streamingAssetsPath + "/Message.json";
+        string messagePath = Application.streamingAssetsPath + "/Message.json"; //Здесь можно использовать URL
         UnityWebRequest messageRequest = UnityWebRequest.Get(messagePath);
         yield return messageRequest.SendWebRequest();
 
@@ -72,7 +71,7 @@ public class LoadingManager : MonoBehaviour
         progressBar.value = 0.66f;
 
         // Шаг 3: Загрузка Asset Bundle
-        string assetBundlePath = Application.streamingAssetsPath + "/buttonBackground";
+        string assetBundlePath = Application.streamingAssetsPath + "/buttonBackground"; //Здесь можно использовать URL
         UnityWebRequest bundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(assetBundlePath);
         yield return bundleRequest.SendWebRequest();
 
@@ -87,7 +86,7 @@ public class LoadingManager : MonoBehaviour
                     Debug.Log("Asset in bundle: " + assetName);
                 }
 
-                string spriteName = "assets/bundles/buttonbackground.png"; // Укажите имя спрайта
+                string spriteName = "assets/bundles/buttonbackground.png";
                 Sprite buttonBackground = loadedBundle.LoadAsset<Sprite>(spriteName);
 
                 if (buttonBackground != null)
@@ -109,7 +108,10 @@ public class LoadingManager : MonoBehaviour
             Debug.LogError("Failed to load Asset Bundle: " + bundleRequest.error);
         }
 
-
+        // Сохраняем данные в статические переменные
+        DataStore.settings = settings;
+        DataStore.message = message;
+        DataStore.loadedBundle = loadedBundle;
 
         // Искусственная задержка перед переходом на основной экран
         yield return new WaitForSeconds(1.0f);
@@ -117,5 +119,4 @@ public class LoadingManager : MonoBehaviour
         // Переход на основной экран
         SceneManager.LoadScene("MainScreen");
     }
-
 }
